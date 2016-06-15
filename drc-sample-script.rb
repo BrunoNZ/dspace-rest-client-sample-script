@@ -1,4 +1,6 @@
-$LOAD_PATH.unshift('/home/bruno/Projetos/dspace-rest-client_BNZANETTE/lib')
+# To use local gem:
+# $LOAD_PATH.unshift('[PATH]/dspace-rest-client/lib')
+
 require 'dspace'
 
 client = Dspace::Client.new(dspace_api: 'https://demo.dspace.org/')
