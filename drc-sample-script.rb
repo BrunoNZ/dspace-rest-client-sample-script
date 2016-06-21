@@ -1,7 +1,12 @@
 # To use local gem:
-# $LOAD_PATH.unshift('[PATH]/dspace-rest-client/lib')
+$LOAD_PATH.unshift('[PATH]/dspace-rest-client/lib')
 
 require 'dspace'
+
+list_all=true
+create_community=true
+create_collection=true
+create_item=true
 
 # ============================================================================ #
 # Create Dspace Client
@@ -14,6 +19,7 @@ end
 client.login 'dspacedemo+admin@gmail.com', 'dspace'
 # ============================================================================ #
 
+if list_all
 # ============================================================================ #
 # List all COMMUNITIES/COLLECTIONS/ITEMS
 
@@ -26,7 +32,7 @@ client.communities.all.each do |community|
     puts "\t->#{collection.name}"
 
     # GET ALL COLLECTIONS's ITEMS
-    client.collections.items(:id => collection.id).each do |item|
+    client.collections.items(:id => collection.id, limit: 10, offset: 0, expand: "metadata").each do |item|
       puts "\t\t->#{item.name}"
 
       # GET ALL ITEMS's BITSTREAMS
@@ -38,7 +44,9 @@ client.communities.all.each do |community|
   end
 end
 # ============================================================================ #
+end
 
+if create_community
 # ============================================================================ #
 # Create COMMUNITY
 community = client.communities.create(
@@ -59,7 +67,9 @@ if (client.communities.update(community, id: community.id))
   puts "Community successfully updated!"
 end
 # ============================================================================ #
+end
 
+if create_collection
 # ============================================================================ #
 # Create COLLECTION
 collection = client.communities.create_collection(
@@ -82,3 +92,26 @@ if (client.collections.update(collection, id: collection.id))
   puts "Collection successfully updated!"
 end
 # ============================================================================ #
+end
+
+if create_item
+# ============================================================================ #
+# Create ITEM
+item_metadata = Dspace::Item.new(
+  'metadata' => [
+    {'key' => "dc.title", 'value' => "Item Created by dspace-rest-client"},
+    {'key' => "dc.description", 'value' => "Description for this awesome item!"}
+  ]
+)
+
+item = client.collections.create_item(item_metadata, id: 1)
+
+puts "Created item!\n#{item.inspect}\n"
+
+# Get ITEM's METADATA
+item = client.items.find(id: item.id, :expand => "metadata")
+item.metadata.each do |m|
+  puts "| #{m.key} => #{m.value}"
+end
+# ============================================================================ #
+end
