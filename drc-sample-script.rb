@@ -10,7 +10,7 @@ create_item=true
 
 # ============================================================================ #
 # Create Dspace Client
-client = Dspace::Client.new(dspace_api: 'https://demo.dspace.org/')
+client = Dspace::Client.new(dspace_api: 'https://localhost:8443')
 if !client.is_running?
   raise 'Can\'t connect to DSpace API.'
 end
@@ -104,14 +104,28 @@ item_metadata = Dspace::Item.new(
   ]
 )
 
-item = client.collections.create_item(item_metadata, id: 1)
+item = client.collections.create_item(item_metadata, id: collection.id)
+file = File.new('logo-c3sl.png', 'r')
+client.items.add_bitstream(
+  file,
+  id: item.id,
+  name: "logo-c3sl.png",
+  description: "Description for this awesome bitstream"
+)
 
 puts "Created item!\n#{item.inspect}\n"
 
 # Get ITEM's METADATA
-item = client.items.find(id: item.id, :expand => "metadata")
+item = client.items.find(id: item.id, expand: "bitstreams,metadata")
+puts "| metadata:"
 item.metadata.each do |m|
-  puts "| #{m.key} => #{m.value}"
+  puts "\t| #{m.key} => #{m.value}"
+end
+puts "| bitstreams:"
+unless item.bit_streams.nil?
+  item.bit_streams.each do |b|
+    puts "\t| name => #{b.name}"
+  end
 end
 # ============================================================================ #
 end
