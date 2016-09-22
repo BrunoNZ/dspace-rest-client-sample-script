@@ -1,5 +1,5 @@
 # To use local gem:
-$LOAD_PATH.unshift('[PATH]/dspace-rest-client/lib')
+$LOAD_PATH.unshift('/home/bruno/Projetos/dspace-rest-client/bnzanette/lib')
 
 require 'dspace'
 
@@ -18,6 +18,20 @@ end
 # Login on Dspace
 client.login 'dspacedemo+admin@gmail.com', 'dspace'
 # ============================================================================ #
+
+element = client.schema_registry.find_qualified_element(
+  schema_prefix: 'dc',
+  element: 'contributor',
+  qualifier: 'author'
+)
+
+element.element = 'TEST'
+element.qualifier = 'TEST'
+puts element.to_h
+
+client.schema_registry.create_field(element,schema_prefix: 'dc')
+
+exit 1
 
 if list_all
 # ============================================================================ #
