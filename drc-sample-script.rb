@@ -4,13 +4,13 @@ $LOAD_PATH.unshift('/home/bruno/Projetos/dspace-rest-client/bnzanette/lib')
 require 'dspace'
 
 list_all=true
-create_community=true
-create_collection=true
-create_item=true
+create_community=false
+create_collection=false
+create_item=false
 
 # ============================================================================ #
 # Create Dspace Client
-client = Dspace::Client.new(dspace_api: 'https://localhost:8443')
+client = Dspace::Client.new(dspace_api: 'https://demo.dspace.org')
 if !client.is_running?
   raise 'Can\'t connect to DSpace API.'
 end
@@ -18,20 +18,6 @@ end
 # Login on Dspace
 client.login 'dspacedemo+admin@gmail.com', 'dspace'
 # ============================================================================ #
-
-element = client.schema_registry.find_qualified_element(
-  schema_prefix: 'dc',
-  element: 'contributor',
-  qualifier: 'author'
-)
-
-element.element = 'TEST'
-element.qualifier = 'TEST'
-puts element.to_h
-
-client.schema_registry.create_field(element,schema_prefix: 'dc')
-
-exit 1
 
 if list_all
 # ============================================================================ #
